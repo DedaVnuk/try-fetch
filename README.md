@@ -3,7 +3,7 @@
 
 Wrapper over **fetch**
 
-## install
+##### install
 ```bash
 npm i try-fetch
 ```

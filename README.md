@@ -3,6 +3,11 @@
 
 Wrapper over **fetch**
 
+## install
+```bash
+npm i try-fetch
+```
+
 ```typescript
 const tryFetch = new TryFetch({
 	baseUrl: 'localhost:3000/api',

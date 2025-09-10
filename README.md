@@ -39,6 +39,14 @@ const users = await tryFetch.query('/users', {
 })
 ```
 
+### state ('success' | 'error' | 'loading')
+```typescript
+if(tryFetch.state === 'loading') {
+	return <Loading />
+}
+
+```
+
 ### cancel
 ```typescript
 tryFetch.cancel();

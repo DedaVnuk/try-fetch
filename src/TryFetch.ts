@@ -23,6 +23,7 @@ type TryFetchSuccessResponse<Data> = {
 export class TryFetch<Data = unknown> {
 	private baseUrl: string;
 	private abortController = new AbortController();
+	private fetchState: 'success' | 'error' | 'loading' = 'loading';
 
 	private errorCreator: Exclude<TryFetchProps<Data>['errorCreator'], undefined> = (
 		response: Response,
@@ -40,11 +41,16 @@ export class TryFetch<Data = unknown> {
 		this.errorCreator = props.errorCreator ?? this.errorCreator;
 	}
 
+	get state() {
+		return this.fetchState;
+	}
+
 	async query<T = Data>(
 		url: `/${string}`,
 		options?: RequestInit,
 	): Promise<TryFetchSuccessResponse<T>> {
 		try {
+			this.fetchState = 'loading';
 			const response = await fetch(`${this.baseUrl}${url}`, {
 				signal: this.abortController.signal,
 				...options,
@@ -55,11 +61,14 @@ export class TryFetch<Data = unknown> {
 				throw new TryFetchError(message, props);
 			}
 
+			this.fetchState = 'success';
+
 			return {
 				ok: true,
 				data: await response.json(),
 			};
 		} catch (error: unknown) {
+			this.fetchState = 'error';
 			if(error instanceof TryFetchError) {
 				return {
 					ok: false,

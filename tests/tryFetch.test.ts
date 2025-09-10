@@ -38,6 +38,13 @@ describe('success way', () => {
 			completed: false,
 		});
 	});
+
+	test('query status', async () => {
+		const res = tryFetch.query('/todos');
+		expect(tryFetch.state).toBe('loading');
+		await res;
+		expect(tryFetch.state).toBe('success');
+	});
 });
 
 describe('error way', () => {
@@ -92,5 +99,12 @@ describe('error way', () => {
 				message: 'Default error',
 			},
 		});
+	});
+
+	test('error query status', async () => {
+		const res = tryFetch.query('/todo');
+		expect(tryFetch.state).toBe('loading');
+		await res;
+		expect(tryFetch.state).toBe('error');
 	});
 });

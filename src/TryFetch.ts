@@ -25,7 +25,7 @@ export class TryFetch<Data = unknown> {
 	private abortController = new AbortController();
 	private fetchState: 'success' | 'error' | 'loading' = 'loading';
 
-	private errorCreator: Exclude<TryFetchProps<Data>['errorCreator'], undefined> = (
+	private errorCreator: TryFetchProps<Data>['errorCreator'] = (
 		response: Response,
 	) => {
 		return {
@@ -47,7 +47,7 @@ export class TryFetch<Data = unknown> {
 
 	async query<T = Data>(
 		url: `/${string}`,
-		options?: RequestInit,
+		options?: RequestInit & { repeat?: Record<'delay' | 'count', number>},
 	): Promise<TryFetchSuccessResponse<T>> {
 		try {
 			this.fetchState = 'loading';
@@ -57,7 +57,7 @@ export class TryFetch<Data = unknown> {
 			});
 
 			if(!response.ok) {
-				const { message, ...props } = this.errorCreator(response);
+				const { message, ...props } = this.errorCreator!(response);
 				throw new TryFetchError(message, props);
 			}
 
@@ -69,28 +69,23 @@ export class TryFetch<Data = unknown> {
 			};
 		} catch (error: unknown) {
 			this.fetchState = 'error';
+
+			let errorData: TryFetchSuccessResponse<T>['error'] = {
+				message: 'Default error',
+			}
+
 			if(error instanceof TryFetchError) {
-				return {
-					ok: false,
-					error: {
-						message: error.message,
-						...error.data,
-					},
-				};
+				errorData = {
+					message: error.message,
+					...error.data,
+				}
 			} else if(isAbortError(error)) {
-				return {
-					ok: false,
-					error: {
-						message: `Query was cancelled`,
-					},
-				};
+				errorData.message = 'Query was cancelled';
 			}
 
 			return {
 				ok: false,
-				error: {
-					message: 'Default error',
-				},
+				error: errorData,
 			};
 		}
 	}
@@ -98,4 +93,5 @@ export class TryFetch<Data = unknown> {
 	cancel() {
 		this.abortController.abort();
 	}
+
 }

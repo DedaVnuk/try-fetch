@@ -1,6 +1,6 @@
 {
   "name": "try-fetch",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "js fetch wrapper",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

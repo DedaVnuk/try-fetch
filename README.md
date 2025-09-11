@@ -23,7 +23,6 @@ const tryFetch = new TryFetch({
 		};
 	},
 })
-
 ```
 
 ### query
@@ -44,10 +43,20 @@ const users = await tryFetch.query('/users', {
 if(tryFetch.state === 'loading') {
 	return <Loading />
 }
-
 ```
 
 ### cancel
 ```typescript
 tryFetch.cancel();
+```
+
+### refetch
+```typescript
+const result = await tryFetch.query('/users');
+if(!result.ok) {
+	setTimeout(() => {
+		const refetchResult = await result.refetch();
+		// ...
+	}, 3000)
+}
 ```

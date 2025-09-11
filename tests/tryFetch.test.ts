@@ -68,10 +68,26 @@ describe('error way', () => {
 
 		expect(await tryFetchWithCustomError.query('/todo')).toEqual({
 			ok: false,
+			refetch: expect.any(Function),
 			error: {
 				message: 'Url not exists',
 				status: 404,
 				data: [],
+			},
+		});
+	});
+
+	test('refetch', async () => {
+		const res = await tryFetch.query('/todo');
+		expect(res.ok).toBeFalsy();
+		const refetchRes = await res.refetch();
+		expect(refetchRes).toEqual({
+			ok: false,
+			refetch: expect.any(Function),
+			error: {
+				message: 'Status: 404; message: Not Found',
+				status: 404,
+				statusText: 'Not Found',
 			},
 		});
 	});
@@ -82,6 +98,7 @@ describe('error way', () => {
 
 		expect(await res).toEqual({
 			ok: false,
+			refetch: expect.any(Function),
 			error: {
 				message: 'Query was cancelled',
 			},
@@ -95,6 +112,7 @@ describe('error way', () => {
 
 		expect(await tryFetchFake.query('/')).toEqual({
 			ok: false,
+			refetch: expect.any(Function),
 			error: {
 				message: 'Default error',
 			},
